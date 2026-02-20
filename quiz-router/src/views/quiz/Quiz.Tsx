@@ -1,4 +1,4 @@
-import style from "./quiz.module.css";
+import style from "./Quiz.module.css";
 
 const Quiz = ()=>{
     return(
