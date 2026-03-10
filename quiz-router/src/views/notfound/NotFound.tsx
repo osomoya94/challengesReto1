@@ -1,9 +1,12 @@
-import style from "./NotFound.module.css";
+import { Link } from "react-router-dom";
 
 const NotFound = () => {
-    return (
-            <h1>soy el quiz</h1>
-        );
+  return (
+    <main>
+      <h1>Página no encontrada</h1>
+      <Link to="/">Ir al inicio</Link>
+    </main>
+  );
 };
 
 export default NotFound;

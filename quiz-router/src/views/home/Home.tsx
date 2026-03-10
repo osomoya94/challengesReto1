@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import style from "./Home.module.css";
 
-const Home = ()=>{
-    return(
-        <>
-        <Link to="/quiz">Empezar</Link>
-        </>
-    )
-}
+const Home = () => {
+  return (
+    <main>
+      <h1>Quiz Router</h1>
+      <Link to="/quiz">Empezar</Link>
+    </main>
+  );
+};
 
 export default Home;
