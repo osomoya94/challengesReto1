@@ -4,7 +4,7 @@ const Home = () => {
   return (
     <main>
       <h1>Quiz Router</h1>
-      <Link to="/quiz">Empezar</Link>
+      <Link to="/settings">Configurar y empezar</Link>
     </main>
   );
 };

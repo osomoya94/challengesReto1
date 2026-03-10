@@ -1,46 +1,63 @@
 import { useMemo } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { questions } from "../../data/questions";
+import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useQuiz } from "../../state/QuizContext";
 
-const Quiz = () => {
+export default function Quiz() {
   const navigate = useNavigate();
   const { state, dispatch } = useQuiz();
 
+  if (state.status === "idle") {
+    return (
+      <main>
+        <p>No hay preguntas cargadas.</p>
+        <Link to="/settings">Ir a Settings</Link>
+      </main>
+    );
+  }
+
+  if (state.status === "loading") {
+    return (
+      <main>
+        <p>Cargando preguntas...</p>
+      </main>
+    );
+  }
+
+  if (state.status === "error") {
+    return (
+      <main>
+        <p style={{ color: "crimson" }}>Error: {state.error}</p>
+        <Link to="/settings">Volver a Settings</Link>
+      </main>
+    );
+  }
+
+  // status === "ready"
+  const questions = state.questions;
   const currentQuestion = questions[state.currentIndex];
+
+  if (state.finished) return <Navigate to="/result" replace />;
+  if (!currentQuestion) return <Navigate to="/result" replace />;
+
   const currentAnswer = useMemo(
-    () => state.answers.find((answer) => answer.questionId === currentQuestion?.id),
-    [currentQuestion?.id, state.answers],
+    () => state.answers.find((a) => a.questionId === currentQuestion.id),
+    [currentQuestion.id, state.answers],
   );
-
-  if (state.finished) {
-    return <Navigate to="/result" replace />;
-  }
-
-  if (!currentQuestion) {
-    dispatch({ type: "FINISH" });
-    return <Navigate to="/result" replace />;
-  }
 
   const handleSelect = (selectedIndex: number) => {
     dispatch({
       type: "ANSWER",
-      payload: {
-        questionId: currentQuestion.id,
-        selectedIndex,
-      },
+      payload: { questionId: currentQuestion.id, selectedIndex },
     });
   };
 
   const handleNext = () => {
-    const isLastQuestion = state.currentIndex === questions.length - 1;
-
-    if (isLastQuestion) {
+    const isLast = state.currentIndex === questions.length - 1;
+    if (isLast) {
       dispatch({ type: "FINISH" });
       navigate("/result");
       return;
     }
-
     dispatch({ type: "NEXT" });
   };
 
@@ -49,30 +66,30 @@ const Quiz = () => {
       <p>
         Pregunta {state.currentIndex + 1} de {questions.length}
       </p>
+
       <h1>{currentQuestion.prompt}</h1>
 
       <div>
-        {currentQuestion.options.map((option, index) => {
+        {currentQuestion.options.map((opt, index) => {
           const isSelected = currentAnswer?.selectedIndex === index;
-
           return (
             <button
-              key={option}
+              key={`${currentQuestion.id}-${opt}`}
               type="button"
               onClick={() => handleSelect(index)}
               aria-pressed={isSelected}
             >
-              {option}
+              {opt}
             </button>
           );
         })}
       </div>
 
       <button type="button" onClick={handleNext} disabled={!currentAnswer}>
-        {state.currentIndex === questions.length - 1 ? "Ver resultado" : "Siguiente"}
+        {state.currentIndex === questions.length - 1
+          ? "Ver resultado"
+          : "Siguiente"}
       </button>
     </main>
   );
-};
-
-export default Quiz;
+}

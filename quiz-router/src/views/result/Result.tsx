@@ -1,29 +1,33 @@
-import { Link } from "react-router-dom";
-import { questions } from "../../data/questions";
+import { Link, Navigate } from "react-router-dom";
 import { useQuiz } from "../../state/QuizContext";
 
-const Result = () => {
+export default function Result() {
   const { state, dispatch } = useQuiz();
+
+  if (state.status !== "ready" || state.questions.length === 0) {
+    return <Navigate to="/settings" replace />;
+  }
+
   const correctAnswers = state.answers.reduce((total, answer) => {
-    const question = questions.find((item) => item.id === answer.questionId);
-    return total + (question?.correctIndex === answer.selectedIndex ? 1 : 0);
+    const q = state.questions.find((x) => x.id === answer.questionId);
+    return total + (q?.correctIndex === answer.selectedIndex ? 1 : 0);
   }, 0);
 
-  const handleRestart = () => {
-    dispatch({ type: "RESTART" });
-  };
+  const retrySame = () => dispatch({ type: "RESTART" });
 
   return (
     <main>
       <h1>Resultado</h1>
       <p>
-        Aciertos: {correctAnswers} / {questions.length}
+        Aciertos: {correctAnswers} / {state.questions.length}
       </p>
-      <Link to="/" onClick={handleRestart}>
-        Volver a empezar
-      </Link>
+
+      <div style={{ display: "flex", gap: 12 }}>
+        <Link to="/quiz" onClick={retrySame}>
+          Reintentar
+        </Link>
+        <Link to="/settings">Nuevo quiz</Link>
+      </div>
     </main>
   );
-};
-
-export default Result;
+}

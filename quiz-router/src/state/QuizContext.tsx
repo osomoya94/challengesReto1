@@ -9,7 +9,7 @@ import { loadJSON, saveJSON } from "../hooks/storage";
 import { initialState, quizReducer } from "./quizReducer";
 import type { QuizAction, QuizState } from "./quizTypes";
 
-const KEY = "quizState.v1";
+const KEY = "quizState.v2";
 
 type QuizContextValue = {
   state: QuizState;
